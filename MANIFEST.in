@@ -1,7 +1,9 @@
 include LICENSE
-include CHANGELOG
+include CHANGELOG.md
 include README.rst
-include *.conf
-include *.dox
-include stomp/test/*
-exclude stomp/test/*.pyc
+#include *.conf
+include *.cfg
+#include *.dox
+include setup.py
+include tests/*
+#exclude tests/*.pyc
