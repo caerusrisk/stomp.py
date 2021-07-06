@@ -353,5 +353,51 @@ def get_errno(e):
     except AttributeError:
         return e.args[0]
 
+def create_reusable_connection(address, timeout=socket._GLOBAL_DEFAULT_TIMEOUT,
+                      source_address=None):
+    """Connect to *address* and return the socket object, with reusable address.
+
+    Adapted from socket.create_connection
+    Convenience function.  Connect to *address* (a 2-tuple ``(host,
+    port)``) and return the socket object.  Passing the optional
+    *timeout* parameter will set the timeout on the socket instance
+    before attempting to connect.  If no *timeout* is supplied, the
+    global default timeout setting returned by :func:`getdefaulttimeout`
+    is used.  If *source_address* is set it must be a tuple of (host, port)
+    for the socket to bind as a source address before making the connection.
+    A host of '' or port 0 tells the OS to use the default.
+    """
+
+    host, port = address
+    err = None
+    for res in socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM):
+        af, socktype, proto, canonname, sa = res
+        #print("atf", af, socktype, proto, canonname, "sar", sa, res)
+        #print("soua", source_address)
+        sock = None
+        try:
+            sock = socket.socket(af, socktype, proto)
+            if timeout is not socket._GLOBAL_DEFAULT_TIMEOUT:
+                sock.settimeout(timeout)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            if source_address:
+                sock.bind(source_address)
+            sock.connect(sa)
+            # Break explicitly a reference cycle
+            err = None
+            print("reso")
+            return sock
+        except socket.error as _:
+            err = _
+            if sock is not None:
+                sock.close()
+    if err is not None:
+        try:
+            raise err
+        finally:
+            # Break explicitly a reference cycle
+            err = None
+    else:
+        raise error("getaddrinfo returns an empty list")
 
 HEARTBEAT_FRAME = Frame("heartbeat")

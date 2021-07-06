@@ -754,9 +754,11 @@ class Transport(BaseTransport):
                 try:
                     logging.info("Attempting connection to host %s, port %s", host_and_port[0], host_and_port[1])
                     if self.__bind_host_port:
-                        self.socket = socket.create_connection(host_and_port, self.__timeout, self.__bind_host_port)
+                        #self.socket = socket.create_connection(host_and_port, self.__timeout, self.__bind_host_port)
+                        self.socket = create_reusable_connection(host_and_port, self.__timeout, self.__bind_host_port)
                     else:
-                        self.socket = socket.create_connection(host_and_port, self.__timeout)
+                        #self.socket = socket.create_connection(host_and_port, self.__timeout)
+                        self.socket = create_reusable_connection(host_and_port, self.__timeout)
                     self.__enable_keepalive()
                     need_ssl = self.__need_ssl(host_and_port)
 
