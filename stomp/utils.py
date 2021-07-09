@@ -385,7 +385,6 @@ def create_reusable_connection(address, timeout=socket._GLOBAL_DEFAULT_TIMEOUT,
             sock.connect(sa)
             # Break explicitly a reference cycle
             err = None
-            print("reso")
             return sock
         except socket.error as _:
             err = _

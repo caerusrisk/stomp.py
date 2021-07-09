@@ -204,7 +204,7 @@ class BaseTransport(stomp.listener.Publisher):
         :param bytes frame_str: raw frame content
         """
         frame_type = f.cmd.lower()
-        if frame_type in ["connected", "message", "receipt", "error", "heartbeat"]:
+        if frame_type in ["connected", "message", "receipt", "error", "heartbeat", "subscribe", "send", "stomp"]:
             if frame_type == "message":
                 self.notify("before_message", f)
             if logging.isEnabledFor(logging.DEBUG):
